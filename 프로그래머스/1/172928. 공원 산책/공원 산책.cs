@@ -1,100 +1,72 @@
 using System;
 
-public class Solution {
-      public int[] solution(string[] park, string[] routes)
+public class Solution
+{
+
+    struct Pos
     {
-        //S위치
-        int[] answer = new int[] { -1, -1 };
-
-
-        for(int i=0; i< park.Length; i++)
+        public int x;
+        public int y;
+    }
+    public int[] solution(string[] park, string[] routes)
+    {
+        //나의 위치 찾기
+        Pos cur = new Pos();
+        for (int i = 0; i < park.Length; i++)
         {
-            for(int j=0; j < park[i].Length; j++ )
+            for (int j = 0; j < park[i].Length; j++)
             {
                 if (park[i][j] == 'S')
                 {
-                    answer[0] = i;
-                    answer[1] = j;
+                    cur.x = j;
+                    cur.y = i;
                     i = park.Length;
                     break;
                 }
             }
         }
 
-        foreach(string s in routes)
+        //가야할 방향
+        Pos dir = new Pos();
+        foreach (string s in routes)
         {
-            //s : "E 2"
-            int targetX = answer[1];
-            int targetY = answer[0];
-
-            switch(s[0])
+            switch (s[0])
             {
-                case 'E':
-                    //범위벗어나면 원래대로
-                    if (targetX + (s[2] - 48) > park[0].Length - 1) break;
-                    for(int i =0; i < s[2] - 48; i++)
-                    {
-                        //X발견하면 원래대로
-                        if (park[targetY][++targetX] == 'X')
-                        {
-                            targetX = answer[1];
-                            break;
-                        }
-                    }
-                    answer[1] = targetX;
-                    answer[0] = targetY;
+                case 'E': dir = new Pos { x = 1, y = 0 }; break;
+                case 'W': dir = new Pos { x = -1, y = 0 }; break;
+                case 'S': dir = new Pos { x = 0, y = 1 }; break;
+                case 'N': dir = new Pos { x = 0, y = -1 }; break;
+            }
+            
+
+            int count = s[2] - '0'; //몇번 가야하는지
+            int nX = cur.x + dir.x * count;
+            int nY = cur.y + dir.y * count;
+            //범위 확인
+            if (nX < 0 || nX > park[0].Length - 1 || nY < 0 || nY > park.Length - 1)
+                continue;
+
+
+            nX = cur.x;
+            nY = cur.y;
+            //지나가다가 장애물 있는지 확인
+            for (int i = 0; i < count; i++)
+            {
+                nX += dir.x;
+                nY += dir.y;
+                if (park[nY][nX] == 'X')
+                {
+                    nX = cur.x;
+                    nY = cur.y;
                     break;
-                case 'W':
-                    //범위벗어나면 원래대로
-                    if (targetX - (s[2] - 48) < 0) break;
-                    for (int i = 0; i < s[2] - 48; i++)
-                    {
-                        //X발견하면 원래대로
-                        if (park[targetY][--targetX] == 'X')
-                        {
-                            targetX = answer[1];
-                            break;
-                        }
-                    }
-                    answer[1] = targetX;
-                    answer[0] = targetY;
-                    break;
-                case 'S':
-                    //범위벗어나면 원래대로
-                    if (targetY + (s[2] - 48) > park.Length - 1) break;
-                    for (int i = 0; i < s[2] - 48; i++)
-                    {
-                        //X발견하면 원래대로
-                        if (park[++targetY][targetX] == 'X')
-                        {
-                            targetY = answer[0];
-                            break;
-                        }
-                    }
-                    answer[1] = targetX;
-                    answer[0] = targetY;
-                    break;
-                case 'N':
-                    //범위벗어나면 원래대로
-                    if (targetY - (s[2] - 48) < 0) break;
-                    for (int i = 0; i < s[2] - 48; i++)
-                    {
-                        //X발견하면 원래대로
-                        if (park[--targetY][targetX] == 'X')
-                        {
-                            targetY = answer[0];
-                            break;
-                        }
-                    }
-                    answer[1] = targetX;
-                    answer[0] = targetY;
-                    break;
+                }
             }
 
-           
+            cur.x = nX;
+            cur.y = nY;
         }
 
-        return answer;
+        return new int[] { cur.y, cur.x };
     }
 
 }
