@@ -28,7 +28,7 @@ int main()
 	ios::sync_with_stdio(false);
 	cin.tie(NULL);
 
-	unordered_set<int> set;
+	set<int> set;
 	int n, m, x;
 	cin >> n;
 	for (int i = 0; i < n; i++)
